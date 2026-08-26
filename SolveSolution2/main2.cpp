@@ -1,4 +1,4 @@
-#include <stdio.h>
+п»ї#include <stdio.h>
 #include <math.h>
 #include <stdbool.h>
 
@@ -54,7 +54,7 @@ int main()
 
     EquationParam parametrs = {.a = NAN, .b = NAN, .c = NAN, .number_of_roots = 0, .x1 = NAN, .x2 = NAN};
 
-    printf("Введите значения коэффициентов \n");
+    printf("Enter coefficients\n");
 
     if (IsCorEnter(&parametrs))
     {
@@ -134,7 +134,7 @@ bool IsCorEnter(EquationParam* parametrs)
         {
             char used_letter = (char)('a' + i);
 
-            printf("Введите коэффициент %c \n", used_letter);
+            printf("Enter coefficient %c\n", used_letter);
 
             EnterStupedUser(used_coef[i], &quant_enter_of_double);
         }
@@ -151,7 +151,7 @@ void OutputRoots(EquationParam parametrs)
     {
         case ZERO_ROOTS:
         {
-            printf("Корней нет \n");
+            printf("No roots\n");
             break;
         }
 
@@ -169,7 +169,7 @@ void OutputRoots(EquationParam parametrs)
 
         case INFINITY_ROOTS:
         {
-            printf("Корней бесконечно много \n");
+            printf("Infinity roots\n");
             break;
         }
 
