@@ -2,14 +2,17 @@
 #include <math.h>
 #include <stdbool.h>
 #include <assert.h>
+#include <stdlib.h>
 
 #define QUANT_RIGHT_DOUBLE 3
 
 #define QUANT_TESTS 6
 
+#define MAX_RANDOM_NUM 1000000
+
 enum NumberOfRoots
 {
-    BEGIN_ROOTS = 0,
+    BEGIN_ROOTS = -1,
     INFINITY_ROOTS = -1,
     ZERO_ROOTS,
     ONE_ROOTS,
@@ -24,25 +27,25 @@ struct EquationParam
 };
 
 
-const double EPSILON = 1e-6;
+const double EPSILON = 1e-7;
 
-bool IsCorEnter       (EquationParam* parametrs);                        //Input
+bool IsCorEnter       (EquationParam* const parametrs);                        //Input
 
-void EnterOneCoef     (double* entered_coef, int *quant_enter_double, char used_letter);
-
-
-int SolveEquation     (EquationParam* parametrs);                       //Solving
-
-int Linear            (double slope, double intercept = 0);
-
-int Square            (EquationParam* parametrs);
-
-int Discriminant      (double a, double b, double c);
+void EnterOneCoef     (double* const entered_coef, int* const quant_enter_double, const char used_letter);
 
 
-bool IsEqualDouble    (double num1, double num2);                     //Service function
+int SolveEquation     (EquationParam* const parametrs);                       //Solving
 
-bool IsItSpace        (int check_num);
+int Linear            (const double slope, const double intercept = 0);
+
+int Square            (EquationParam* const parametrs);
+
+int Discriminant      (const double a, const double b, const double c);
+
+
+bool IsEqualDouble    (const double num1, const double num2);                     //Service function
+
+bool IsItSpace        (const int check_num);
 
 bool DeleteBuf        ();
 
@@ -54,6 +57,8 @@ void RunAllTests      ();                                            //Tests
 
 void RunTest          (EquationParam test);
 
+int RunTestRand       (EquationParam test);
+
 
 int main()
 {
@@ -63,22 +68,22 @@ int main()
     int number_of_roots = 0;
     */
 
-    EquationParam parametrs = {.a = NAN, .b = NAN, .c = NAN, .number_of_roots = BEGIN_ROOTS, .x1 = NAN, .x2 = NAN};
+/*    EquationParam parametrs = {.a = NAN, .b = NAN, .c = NAN, .number_of_roots = BEGIN_ROOTS, .x1 = NAN, .x2 = NAN};
 
     IsCorEnter(&parametrs);
 
     SolveEquation(&parametrs);
 
     OutputRoots(parametrs);
-
-    //RunAllTests();
+*/
+    RunAllTests();
 
     return 0;
 
 }
 
 
-bool IsCorEnter(EquationParam* parametrs)
+bool IsCorEnter(EquationParam* const parametrs)
 {
     printf("Enter coefficients\n");
     int quant_enter_of_double = 0;
@@ -96,7 +101,7 @@ bool IsCorEnter(EquationParam* parametrs)
     return true;
 }
 
-void EnterOneCoef(double* entered_coef, int *quant_enter_of_double, char used_letter)
+void EnterOneCoef(double* const entered_coef, int* const quant_enter_of_double, const char used_letter)
 {
     //bool is_clean_buf = DeleteBuf();
     while(scanf("%lg", entered_coef) != 1 && !DeleteBuf())
@@ -111,50 +116,42 @@ void EnterOneCoef(double* entered_coef, int *quant_enter_of_double, char used_le
 
 
 
-int SolveEquation(EquationParam* parametrs)
+int SolveEquation(EquationParam* const parametrs)
 {
-    const a_SE = parametrs->a;
-    const b_SE = parametrs->b;
-    const c_SE = parametrs->c;
-
-    if(IsEqualDouble(a_SE, 0.0) && IsEqualDouble(b_SE, 0.0) && IsEqualDouble(c_SE, 0.0))
+    if(IsEqualDouble(parametrs->a, 0.0) && IsEqualDouble(parametrs->b, 0.0) && IsEqualDouble(parametrs->c, 0.0))
     {
         parametrs->number_of_roots = INFINITY_ROOTS;
     }
 
-    else if(IsEqualDouble(a_SE, 0.0) && IsEqualDouble(b_SE, 0.0) && ! IsEqualDouble((c_SE), 0.0))
+    else if(IsEqualDouble(parametrs->a, 0.0) && IsEqualDouble(parametrs->b, 0.0) && ! IsEqualDouble((parametrs->c), 0.0))
     {
         parametrs->number_of_roots = ZERO_ROOTS;
     }
 
-    else if(IsEqualDouble(a_SE, 0.0) && ! IsEqualDouble(b_SE, 0.0))
+    else if(IsEqualDouble(parametrs->a, 0.0) && ! IsEqualDouble(parametrs->b, 0.0))
     {
-        parametrs->x1 = Linear(b_SE, c_SE);
+        parametrs->x1 = Linear(parametrs->b, parametrs->c);
         parametrs->number_of_roots = ONE_ROOTS;
     }
 
     Square(parametrs);
 
-    assert(parametrs->number_of_roots < 0);
+    //assert(parametrs->number_of_roots < 0);
 
     return 0;
 }
 
-int Linear (double slope, double intercept)
+int Linear (const double slope, const double intercept)
 {
-    assert(slope == 0);
+    //assert(slope == 0);
     return - intercept / slope;
 }
 
-int Square (EquationParam* parametrs)
+int Square (EquationParam* const parametrs)
 {
-    const a_Sq = parametrs->a;
-    const b_Sq = parametrs->b;
-    const c_Sq = parametrs->c;
-
     double discriminant = 0.0;
 
-    discriminant = Discriminant(a_Sq, b_Sq, c_Sq);
+    discriminant = Discriminant(parametrs->a, parametrs->b, parametrs->c);
 
 
     if(discriminant < 0.0 && !IsEqualDouble(discriminant, 0.0))
@@ -162,33 +159,32 @@ int Square (EquationParam* parametrs)
         parametrs->number_of_roots = ZERO_ROOTS;
     }
 
-    else if(IsEqualDouble(discriminant, 0.0) && !IsEqualDouble(a_Sq, 0.0))
+    else if(IsEqualDouble(discriminant, 0.0) && !IsEqualDouble(parametrs->a, 0.0))
     {
-        parametrs->x1 = - b_Sq / (2 * a_Sq);
+        parametrs->x1 = - parametrs->b / (2 * parametrs->a);
         parametrs->number_of_roots = ONE_ROOTS;
     }
 
-    else if(! IsEqualDouble(a_Sq, 0.0))
+    else if(! IsEqualDouble(parametrs->a, 0.0))
     {
         double corenb = sqrt(discriminant);
-        parametrs->x1 = (- b_Sq + corenb) / (2 * a_Sq);
-        parametrs->x2 = (- b_Sq - corenb) / (2 * a_Sq);
+        parametrs->x1 = (- parametrs->b + corenb) / (2 * parametrs->a);
+        parametrs->x2 = (- parametrs->b - corenb) / (2 * parametrs->a);
 
         parametrs->number_of_roots = TWO_ROOTS;
     }
 
 }
 
-int Discriminant (double a, double b, double c)
+int Discriminant (const double a, const double b, const double c)
 {
-    assert(a == 0);
     return b * b - 4 * a * c;
 }
 
 
 
 
-bool IsEqualDouble(double num1, double num2)
+bool IsEqualDouble(const double num1, const double num2)
 {
     if (isnan(num1))
         {
@@ -214,7 +210,7 @@ bool DeleteBuf()
     return flag;
 }
 
-bool IsItSpace(int check_num)
+bool IsItSpace(const int check_num)
 {
     return (check_num == ' ' || check_num == '\t');
 }
@@ -241,7 +237,7 @@ void OutputRoots(EquationParam parametrs)
 
             printf("x1 = %lg, x2 = %lg \n", parametrs.x1, parametrs.x2);
             break;
-
+        }
 
         case INFINITY_ROOTS:
         {
@@ -278,6 +274,33 @@ void RunAllTests()
     {
         RunTest(tests_list[i]);
     }
+
+    int quant_cor_r = 0;
+
+    for(int i; i < 1000; i++)
+    {
+        double x1_r = (double) (rand() %(2 * MAX_RANDOM_NUM) -  MAX_RANDOM_NUM) / 100;
+        double x2_r = (double) (rand() %(2 * MAX_RANDOM_NUM) -  MAX_RANDOM_NUM) / 100;
+        double a_r = rand() %(1000); // srand
+        double b_r = - a_r * (x1_r+ x2_r);
+        double c_r = a_r * x1_r * x2_r;
+
+        int number_of_roots_r = BEGIN_ROOTS;
+        if (IsEqualDouble(x1_r, x2_r))
+        {
+            number_of_roots_r = ONE_ROOTS;
+            x2_r = NAN;
+        }
+        else
+            number_of_roots_r = TWO_ROOTS;
+
+        EquationParam random_param = {.a = a_r, .b = b_r, .c = c_r,
+                                      .number_of_roots = number_of_roots_r, .x1 = x1_r, .x2 = x2_r};
+
+        quant_cor_r = quant_cor_r + RunTestRand(random_param);
+    }
+
+    printf("Quantity correct random test %d\n", quant_cor_r);
 
 
 
@@ -334,6 +357,36 @@ void RunTest(EquationParam test)
 
 }
 
+
+
+int RunTestRand(EquationParam random_param)
+{
+
+        EquationParam parametrs_testing = {.a = random_param.a, .b = random_param.b, .c = random_param.c,
+                                           .number_of_roots = 0, .x1 = NAN, .x2 = NAN};
+
+        SolveEquation(&parametrs_testing);
+
+        bool x1_cor = false, x2_cor = false, quant_roots_cor = false;
+
+        x1_cor = IsEqualDouble(parametrs_testing.x1, random_param.x1)
+                 || (IsEqualDouble(parametrs_testing.x2, random_param.x1)
+                 && IsEqualDouble(parametrs_testing.x1, random_param.x2));
+
+        x2_cor = IsEqualDouble(parametrs_testing.x2, random_param.x2)
+                 || (IsEqualDouble(parametrs_testing.x2, random_param.x1)
+                 && IsEqualDouble(parametrs_testing.x1, random_param.x2));
+
+        quant_roots_cor = parametrs_testing.number_of_roots == random_param.number_of_roots;
+
+        if(x1_cor && x2_cor && quant_roots_cor)
+            return 1;
+
+        else
+        {
+            return 0;
+        }
+}
 
 
 
