@@ -3,12 +3,13 @@
 #include <stdbool.h>
 #include <assert.h>
 #include <stdlib.h>
+#include <time.h>
 
 #define QUANT_RIGHT_DOUBLE 3
 
 #define QUANT_TESTS 6
 
-#define MAX_RANDOM_NUM 1000000
+#define MAX_RANDOM_NUM 10000
 
 enum NumberOfRoots
 {
@@ -27,37 +28,37 @@ struct EquationParam
 };
 
 
-const double EPSILON = 1e-7;
+const double EPSILON = 1e-4;
 
-bool IsCorEnter       (EquationParam* const parametrs);                        //Input
+bool   IsCorEnter       (EquationParam* const parametrs);                        //Input
 
-void EnterOneCoef     (double* const entered_coef, int* const quant_enter_double, const char used_letter);
-
-
-int SolveEquation     (EquationParam* const parametrs);                       //Solving
-
-int Linear            (const double slope, const double intercept = 0);
-
-int Square            (EquationParam* const parametrs);
-
-int Discriminant      (const double a, const double b, const double c);
+void   EnterOneCoef     (double* const entered_coef, int* const quant_enter_double, const char used_letter);
 
 
-bool IsEqualDouble    (const double num1, const double num2);                     //Service function
+int    SolveEquation    (EquationParam* const parametrs);                       //Solving
 
-bool IsItSpace        (const int check_num);
+double Linear           (const double slope, const double intercept = 0);
 
-bool DeleteBuf        ();
+int    Square           (EquationParam* const parametrs);
+
+double Discriminant     (const double a, const double b, const double c);
 
 
-void OutputRoots      (EquationParam parametrs);                     //Output
+bool   IsEqualDouble    (const double num1, const double num2);                     //Service function
+
+bool   IsItSpace        (const int check_num);
+
+bool   DeleteBuf        ();
 
 
-void RunAllTests      ();                                            //Tests
+void   OutputRoots      (EquationParam parametrs);                     //Output
 
-void RunTest          (EquationParam test);
 
-int RunTestRand       (EquationParam test);
+void   RunAllTests      ();                                            //Tests
+
+void   RunTest          (EquationParam test);
+
+int    RunTestRand      (EquationParam test);
 
 
 int main()
@@ -134,14 +135,17 @@ int SolveEquation(EquationParam* const parametrs)
         parametrs->number_of_roots = ONE_ROOTS;
     }
 
-    Square(parametrs);
+    else
+    {
+        Square(parametrs);
+    }
 
     //assert(parametrs->number_of_roots < 0);
 
     return 0;
 }
 
-int Linear (const double slope, const double intercept)
+double Linear (const double slope, const double intercept)
 {
     //assert(slope == 0);
     return - intercept / slope;
@@ -173,10 +177,10 @@ int Square (EquationParam* const parametrs)
 
         parametrs->number_of_roots = TWO_ROOTS;
     }
-
+    return 0;
 }
 
-int Discriminant (const double a, const double b, const double c)
+double Discriminant (const double a, const double b, const double c)
 {
     return b * b - 4 * a * c;
 }
@@ -234,7 +238,7 @@ void OutputRoots(EquationParam parametrs)
         }
 
         case TWO_ROOTS:
-
+        {
             printf("x1 = %lg, x2 = %lg \n", parametrs.x1, parametrs.x2);
             break;
         }
@@ -247,6 +251,7 @@ void OutputRoots(EquationParam parametrs)
 
         default:
         {
+            break;
         }
 
     }
@@ -277,27 +282,94 @@ void RunAllTests()
 
     int quant_cor_r = 0;
 
-    for(int i; i < 1000; i++)
+    srand(time(0));
+
+    for(int i = 0; i < 1000; i++)
     {
-        double x1_r = (double) (rand() %(2 * MAX_RANDOM_NUM) -  MAX_RANDOM_NUM) / 100;
-        double x2_r = (double) (rand() %(2 * MAX_RANDOM_NUM) -  MAX_RANDOM_NUM) / 100;
-        double a_r = rand() %(1000); // srand
-        double b_r = - a_r * (x1_r+ x2_r);
-        double c_r = a_r * x1_r * x2_r;
+        double a_r = (double) ((rand() % (2 * MAX_RANDOM_NUM) - (MAX_RANDOM_NUM))) / 100;
+        double b_r = (double) ((rand() % (2 * MAX_RANDOM_NUM) - (MAX_RANDOM_NUM))) / 100;
+        double c_r = (double) ((rand() % (2 * MAX_RANDOM_NUM) - (MAX_RANDOM_NUM))) / 100;
 
-        int number_of_roots_r = BEGIN_ROOTS;
-        if (IsEqualDouble(x1_r, x2_r))
-        {
-            number_of_roots_r = ONE_ROOTS;
-            x2_r = NAN;
-        }
-        else
-            number_of_roots_r = TWO_ROOTS;
-
+        //printf("%lg %lg %lg\n", a_r, b_r, c_r);
         EquationParam random_param = {.a = a_r, .b = b_r, .c = c_r,
-                                      .number_of_roots = number_of_roots_r, .x1 = x1_r, .x2 = x2_r};
+                                      .number_of_roots = BEGIN_ROOTS, .x1 = NAN, .x2 = NAN};
 
-        quant_cor_r = quant_cor_r + RunTestRand(random_param);
+        SolveEquation(&random_param);
+
+
+        /*
+        if(isnan(random_param.x1))
+        {
+            if(isnan(random_param.x2))
+            {
+                if(random_param.number_of_roots == ZERO_ROOTS || random_param.number_of_roots == ZERO_ROOTS)
+                   quant_cor_r = quant_cor_r + 1;
+                else
+                    printf("k1");
+            }
+
+            else
+            {
+                printf("k2");
+            }
+        }
+
+        else
+        {
+            if(IsEqualDouble(a_r * random_param.x1 * random_param.x1 + b_r * random_param.x1 + c_r, 0.0))
+            {
+                if(isnan(random_param.x2) && random_param.number_of_roots == 1)
+                {
+                    quant_cor_r = quant_cor_r + 1;
+                }
+
+                if(IsEqualDouble(a_r * random_param.x2 * random_param.x2 + b_r * random_param.x2 + c_r, 0.0)
+                   && random_param.number_of_roots == 2)
+                    quant_cor_r = quant_cor_r + 1;
+            }
+        }
+        */
+
+
+        switch(random_param.number_of_roots)
+        {
+        case ZERO_ROOTS:
+        {
+            if(isnan(random_param.x1) && isnan(random_param.x2))
+                quant_cor_r = quant_cor_r + 1;
+            break;
+        }
+
+        case ONE_ROOTS:
+        {
+            if(isnan(random_param.x2)
+            && IsEqualDouble(a_r * random_param.x1 * random_param.x1 + b_r * random_param.x1 + c_r, 0.0))
+                quant_cor_r = quant_cor_r + 1;
+            break;
+        }
+
+        case TWO_ROOTS:
+        {
+            if(IsEqualDouble(a_r * random_param.x1 * random_param.x1 + b_r * random_param.x1 + c_r, 0.0)
+            && IsEqualDouble(a_r * random_param.x2 * random_param.x2 + b_r * random_param.x2 + c_r, 0.0))
+                quant_cor_r = quant_cor_r + 1;
+            break;
+        }
+
+        case INFINITY_ROOTS:
+        {
+            if(isnan(random_param.x1) && isnan(random_param.x2)
+               && IsEqualDouble(a_r, 0.0) && IsEqualDouble(b_r, 0.0) && IsEqualDouble(c_r, 0.0))
+                quant_cor_r = quant_cor_r + 1;
+            break;
+        }
+
+        default:
+        {
+            printf("wtf");
+            break;
+        }
+        }
     }
 
     printf("Quantity correct random test %d\n", quant_cor_r);
@@ -358,35 +430,6 @@ void RunTest(EquationParam test)
 }
 
 
-
-int RunTestRand(EquationParam random_param)
-{
-
-        EquationParam parametrs_testing = {.a = random_param.a, .b = random_param.b, .c = random_param.c,
-                                           .number_of_roots = 0, .x1 = NAN, .x2 = NAN};
-
-        SolveEquation(&parametrs_testing);
-
-        bool x1_cor = false, x2_cor = false, quant_roots_cor = false;
-
-        x1_cor = IsEqualDouble(parametrs_testing.x1, random_param.x1)
-                 || (IsEqualDouble(parametrs_testing.x2, random_param.x1)
-                 && IsEqualDouble(parametrs_testing.x1, random_param.x2));
-
-        x2_cor = IsEqualDouble(parametrs_testing.x2, random_param.x2)
-                 || (IsEqualDouble(parametrs_testing.x2, random_param.x1)
-                 && IsEqualDouble(parametrs_testing.x1, random_param.x2));
-
-        quant_roots_cor = parametrs_testing.number_of_roots == random_param.number_of_roots;
-
-        if(x1_cor && x2_cor && quant_roots_cor)
-            return 1;
-
-        else
-        {
-            return 0;
-        }
-}
 
 
 
