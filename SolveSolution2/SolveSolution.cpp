@@ -5,6 +5,7 @@
 #include <stdlib.h>
 #include <time.h>
 #include <ctype.h>
+#include <string.h>
 
 #define QUANT_RIGHT_DOUBLE 3
 
@@ -29,6 +30,8 @@ struct EquationParam
 
 const double EPSILON = 1e-6;
 
+bool   StartTests       (int argc, char* argv);
+
 bool   IsCorEnter       (EquationParam* const parametrs);                        //Input
 
 void   EnterOneCoef     (double* const entered_coef, const char used_letter);
@@ -36,7 +39,7 @@ void   EnterOneCoef     (double* const entered_coef, const char used_letter);
 
 int    SolveEquation    (EquationParam* const parametrs);                       //Solving
 
-double Linear           (const double slope, const double intercept = 0);
+double Linear           (const double slope, const double intercept);
 
 int    Square           (EquationParam* const parametrs);
 
@@ -67,20 +70,36 @@ bool   IsZeroEquation   (double a, double b, double c, double x);
 double GenRandDouble    ();                                             //Random Generaation
 
 
-int main()
+int main(int argc, char* argv[])
 {
-    EquationParam parametrs = {.a = NAN, .b = NAN, .c = NAN, .number_of_roots = INITIAL_ROOTS, .x1 = NAN, .x2 = NAN};
 
-    IsCorEnter(&parametrs);
+    if(StartTests(argc, argv[1])) {}
 
-    SolveEquation(&parametrs);
+    else
+    {
+        EquationParam parametrs = {.a = NAN, .b = NAN, .c = NAN, .number_of_roots = INITIAL_ROOTS, .x1 = NAN, .x2 = NAN};
 
-    OutputRoots(parametrs);
+        IsCorEnter(&parametrs);
 
-    RunAllTests();
+        SolveEquation(&parametrs);
+
+        OutputRoots(parametrs);
+    }
 
     return 0;
 
+}
+
+
+bool StartTests (int argc, char* argv)
+{
+    if(argc == 2 && !strcmp(argv, "test"))
+    {
+        RunAllTests();
+        return true;
+    }
+
+    return false;
 }
 
 
@@ -150,7 +169,6 @@ int SolveEquation(EquationParam* const parametrs)
 
 double Linear (const double slope, const double intercept)
 {
-    assert(slope != 0);
     return - intercept / slope;
 }
 
@@ -194,9 +212,9 @@ double Discriminant (const double a, const double b, const double c)
 bool IsEqualDouble(const double num1, const double num2)
 {
     if (isnan(num1))
-        {
-            return isnan(num2);
-        }
+    {
+        return isnan(num2);
+    }
 
     return (fabs(num1 - num2) < EPSILON);
 }
@@ -277,7 +295,7 @@ void RunAllTests()
 
     for(int i = 0; i < tests_size; i++)
     {
-        test_quant = test_quant + RunTest(tests_list[i]);
+        test_quant += RunTest(tests_list[i]);
     }
 
     printf("Quantity correct hand test %d\n", test_quant);
