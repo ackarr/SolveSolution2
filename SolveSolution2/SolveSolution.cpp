@@ -30,7 +30,7 @@ struct EquationParam
 
 const double EPSILON = 1e-6;
 
-bool   StartTests       (int argc, char* argv);
+const int QUANT_RANDOM_TESTS = 1000;
 
 bool   IsCorEnter       (EquationParam* const parametrs);                        //Input
 
@@ -56,7 +56,9 @@ bool   DeleteBuf        ();
 void   OutputRoots      (EquationParam parametrs);                     //Output
 
 
-void   RunAllTests      ();                                            //Tests
+int    StartTests       (int argc, char* argv);                         //Tests
+
+bool   RunAllTests      ();
 
 int    RunTest          (EquationParam test);
 
@@ -64,7 +66,7 @@ int    RunTestRand      (EquationParam test);
 
 int    RunRandTest      (EquationParam parametrs);
 
-bool   IsZeroEquation   (double a, double b, double c, double x);
+bool   IsZeroEquation   (const EquationParam random_param);
 
 
 double GenRandDouble    ();                                             //Random Generaation
@@ -73,10 +75,9 @@ double GenRandDouble    ();                                             //Random
 int main(int argc, char* argv[])
 {
 
-    if(StartTests(argc, argv[1])) {}
-
-    else
+    if(StartTests(argc, argv[1]))
     {
+
         EquationParam parametrs = {.a = NAN, .b = NAN, .c = NAN, .number_of_roots = INITIAL_ROOTS, .x1 = NAN, .x2 = NAN};
 
         IsCorEnter(&parametrs);
@@ -86,20 +87,23 @@ int main(int argc, char* argv[])
         OutputRoots(parametrs);
     }
 
+
     return 0;
 
 }
 
 
-bool StartTests (int argc, char* argv)
+int StartTests (int argc, char* code_word)
 {
-    if(argc == 2 && !strcmp(argv, "test"))
+    if(argc == 2 && !strcmp(code_word, "test"))
     {
-        RunAllTests();
-        return true;
+        if(RunAllTests())
+            return true;
+        else
+            return false;
     }
 
-    return false;
+    return true;
 }
 
 
@@ -277,8 +281,10 @@ void OutputRoots(EquationParam parametrs)
 
 
 
-void RunAllTests()
+bool RunAllTests()
 {
+    bool is_success = true;
+
     EquationParam tests_list [] =
     {
         {.a = 0.0, .b = 0.0, .c = 0.0, .number_of_roots = INFINITY_ROOTS, .x1 = NAN, .x2 = NAN},
@@ -295,25 +301,41 @@ void RunAllTests()
 
     for(int i = 0; i < tests_size; i++)
     {
-        test_quant += RunTest(tests_list[i]);
+        if(int test_result = RunTest(tests_list[i]))
+        {
+            test_quant += test_result;
+        }
+
+        else
+            is_success = false;
     }
 
-    printf("Quantity correct hand test %d\n", test_quant);
+    printf("Quantity correct hand test %d / %d\n", test_quant, tests_size);
 
 
     int test_quant_r = 0;
 
     srand(time(0));
 
-    for(int i = 0; i < 1000; i++)
+    for(int i = 0; i < QUANT_RANDOM_TESTS; i++)
     {
         //printf("%lg %lg %lg\n", random_param.a, random_param.b, random_param.c);
         EquationParam random_param = {.a = GenRandDouble(), .b = GenRandDouble(), .c = GenRandDouble(),
                                       .number_of_roots = INITIAL_ROOTS, .x1 = NAN, .x2 = NAN};
 
-        test_quant_r = test_quant_r + RunRandTest(random_param);
+        if(int random_test_result = RunRandTest(random_param))
+        {
+            test_quant += random_test_result;
+        }
+
+        else
+            is_success = false;
+
+        test_quant_r += RunRandTest(random_param);
     }
-    printf("Quantity correct random test %d\n", test_quant_r);
+    printf("Quantity correct random test %d /  %d\n", test_quant_r, QUANT_RANDOM_TESTS);
+
+    return is_success;
 }
 
 
@@ -372,15 +394,14 @@ int RunRandTest(EquationParam random_param)
         case ONE_ROOTS:
         {
             if(isnan(random_param.x2)
-            && IsZeroEquation(random_param.a, random_param.b, random_param.c, random_param.x1))
+            && IsZeroEquation(random_param))
                 return 1;
             break;
         }
 
         case TWO_ROOTS:
         {
-            if(IsZeroEquation(random_param.a, random_param.b, random_param.c, random_param.x1)
-            && IsZeroEquation(random_param.a, random_param.b, random_param.c, random_param.x2))
+            if(IsZeroEquation(random_param))
                 return 1;
             break;
         }
@@ -404,9 +425,24 @@ int RunRandTest(EquationParam random_param)
     return 0;
 }
 
-bool IsZeroEquation(double a, double b, double c, double x)
+bool IsZeroEquation(EquationParam random_param)
 {
-    return IsEqualDouble(a * x * x + b * x + c, 0.0);
+    if(!isnan(random_param.x1))
+    {
+        if(!isnan(random_param.x2))
+        {
+            return IsEqualDouble(random_param.a * random_param.x1 * random_param.x1
+                               + random_param.b * random_param.x1 + random_param.c, 0.0)
+                && IsEqualDouble(random_param.a * random_param.x2 * random_param.x2
+                               + random_param.b * random_param.x2 + random_param.c, 0.0);
+        }
+
+        else
+        {
+            return IsEqualDouble(random_param.a * random_param.x1 * random_param.x1
+                               + random_param.b * random_param.x1 + random_param.c, 0.0);
+        }
+    }
 }
 
 
