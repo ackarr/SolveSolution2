@@ -1,8 +1,8 @@
 # Исходники
 *.out
-a.out
 solver
 flags
+SolveSolution
 
 # Папки отладки macOS
 *.dSYM/

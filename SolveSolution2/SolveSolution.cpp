@@ -11,7 +11,7 @@
 #define MAX_RANDOM_NUM 10000
 
 #define BadCode(condition)\
-do {\
+{\
     if(!(condition))\
     {\
         printf("ERROR: %s\n", #condition);\
@@ -33,9 +33,9 @@ do {\
                     ██▀░░░░░░░░░░░░░░░░░░░░░░▄▄▄████████████\n\
                     ██▄░░░░░░░░░░░░░░░░░░▄▄█████████████████\n\
                     ████▄░░░░░░░░░▄▄▄▄▄█████████████████████\n\
-                    ████████████████████████████████████████")\
+                    ████████████████████████████████████████\n");\
     }\
-}while(0)
+}
 
 enum NumberOfRoots
 {
@@ -58,7 +58,7 @@ const double EPSILON = 1e-6;
 
 const int QUANT_RANDOM_TESTS = 1000;
 
-bool   IsCorEnter       (EquationParam* const parametrs);                        //Input
+bool   IsCorEnter       (EquationParam* const parametrs);                       //Input
 
 void   EnterOneCoef     (double* const entered_coef, const char used_letter);
 
@@ -72,17 +72,17 @@ int    Square           (EquationParam* const parametrs);
 double Discriminant     (const double a, const double b, const double c);
 
 
-bool   IsEqualDouble    (const double num1, const double num2);                //Service function
+bool   IsEqualDouble    (const double num1, const double num2);                 //Service function
 
 bool   IsItSpace        (const int check_num);
 
 bool   DeleteBuf        ();
 
 
-void   OutputRoots      (EquationParam parametrs);                     //Output
+void   OutputRoots      (EquationParam parametrs);                              //Output
 
 
-int    StartTests       (int argc, char* argv);                         //Tests
+int    StartTests       (int argc, char* argv);                                 //Tests
 
 bool   RunAllTests      ();
 
@@ -95,14 +95,13 @@ int    RunRandTest      (EquationParam parametrs);
 bool   IsZeroEquation   (const EquationParam random_param);
 
 
-double GenRandDouble    ();                                             //Random Generaation
+double GenRandDouble    ();                                                 //Random Generaation
 
 
 int main(int argc, char* argv[])
 {
     if(StartTests(argc, argv[1]))
     {
-
         EquationParam parametrs = {.a = NAN, .b = NAN, .c = NAN, .number_of_roots = INITIAL_ROOTS, .x1 = NAN, .x2 = NAN};
 
         IsCorEnter(&parametrs);
@@ -166,7 +165,7 @@ void EnterOneCoef(double* const entered_coef, const char used_letter)
 
 int SolveEquation(EquationParam* const parametrs)
 {
-    BadCode(isnan(parametrs->a));
+    BadCode(!isnan(parametrs->a));
     BadCode(!isnan(parametrs->b));
     BadCode(!isnan(parametrs->c));
 
@@ -294,8 +293,10 @@ void OutputRoots(EquationParam parametrs)
             break;
         }
 
+        case INITIAL_ROOTS:
         default:
         {
+            printf("wtf\n");
             break;
         }
 
@@ -340,7 +341,7 @@ bool RunAllTests()
 
     int test_quant_r = 0;
 
-    srand(time(0));
+    srand((unsigned int) (time(0)));
 
     for(int i = 0; i < QUANT_RANDOM_TESTS; i++)
     {
@@ -418,8 +419,7 @@ int RunRandTest(EquationParam random_param)
 
         case ONE_ROOTS:
         {
-            if(isnan(random_param.x2)
-            && IsZeroEquation(random_param))
+            if(isnan(random_param.x2) && IsZeroEquation(random_param))
                 return 1;
             break;
         }
@@ -441,6 +441,7 @@ int RunRandTest(EquationParam random_param)
             break;
         }
 
+        case INITIAL_ROOTS:
         default:
         {
             printf("wtf");
@@ -468,6 +469,8 @@ bool IsZeroEquation(EquationParam random_param)
                                + random_param.b * random_param.x1 + random_param.c, 0.0);
         }
     }
+
+    return false;
 }
 
 
@@ -476,7 +479,3 @@ double GenRandDouble()
 {
     return (double) ((rand() % (2 * MAX_RANDOM_NUM) - (MAX_RANDOM_NUM))) / 100;
 }
-
-
-
-
