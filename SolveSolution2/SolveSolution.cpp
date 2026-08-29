@@ -1,7 +1,6 @@
 #include <stdio.h>
 #include <math.h>
 #include <stdbool.h>
-#include <assert.h>
 #include <stdlib.h>
 #include <time.h>
 #include <ctype.h>
@@ -10,6 +9,33 @@
 #define QUANT_RIGHT_DOUBLE 3
 
 #define MAX_RANDOM_NUM 10000
+
+#define BadCode(condition)\
+do {\
+    if(!(condition))\
+    {\
+        printf("ERROR: %s\n", #condition);\
+        printf("\
+                    ████████████████████████████████████████\n\
+                    ████████████▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀█████████\n\
+                    █████▀▀░░░░░░░░░░░░░░░░░░░░░░░░░▀███████\n\
+                    ████░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░██████\n\
+                    ███▀░░░░░▄▄▄░░░░░░░░▄▄▀███▄▄░░░░░░░█████\n\
+                    ██░░░░░░▀▀▀███▄▄░░░█▄▄█▀█▀▀▀▀░▀░▄▄░▀▀███\n\
+                    █░░▄▄░▄▄░▄░░░█▀░░░░░░░░░░▀▄▄▄█▀▀▄░▀█░░▀█\n\
+                    █░░░░▄░▀▀░░▄█▀░░░░░░▄▄░░░░░░░▄▄▀██▄░█░░█\n\
+                    ██░░░██░░░▀▀█▄░░░▀▀▀▄▀░▄▄▄███▀░▄█░░░▀░▄█\n\
+                    ██▄░██▀█▀▄▄▄▄▄█▄▄▄▄▄▀▀█▀░░▄███▀█▀░░░▄▄██\n\
+                    ███░████▄█▄░░█░░▄█░░▄▄███▀▀▀█▄▀░░░░▄████\n\
+                    ███░▀██████████████▀▀▀▀█░░░▄▀▀░░░░▄█████\n\
+                    ███░░██▀█▀██▀█▀░░▀█░░░░█▄█▀░░░░░▄███████\n\
+                    ███░░░░▀▀▀██▄██▄▄██▀▀▀▀▀░░░░░▄▄█████████\n\
+                    ██▀░░░░░░░░░░░░░░░░░░░░░░▄▄▄████████████\n\
+                    ██▄░░░░░░░░░░░░░░░░░░▄▄█████████████████\n\
+                    ████▄░░░░░░░░░▄▄▄▄▄█████████████████████\n\
+                    ████████████████████████████████████████")\
+    }\
+}while(0)
 
 enum NumberOfRoots
 {
@@ -140,9 +166,9 @@ void EnterOneCoef(double* const entered_coef, const char used_letter)
 
 int SolveEquation(EquationParam* const parametrs)
 {
-    assert(!isnan(parametrs->a));
-    assert(!isnan(parametrs->b));
-    assert(!isnan(parametrs->c));
+    BadCode(isnan(parametrs->a));
+    BadCode(!isnan(parametrs->b));
+    BadCode(!isnan(parametrs->c));
 
     if(IsEqualDouble(parametrs->a, 0.0) && IsEqualDouble(parametrs->b, 0.0) && IsEqualDouble(parametrs->c, 0.0))
     {
@@ -165,7 +191,7 @@ int SolveEquation(EquationParam* const parametrs)
         Square(parametrs);
     }
 
-    assert(parametrs->number_of_roots != INITIAL_ROOTS);
+    BadCode(parametrs->number_of_roots != INITIAL_ROOTS);
 
     return 0;
 }
