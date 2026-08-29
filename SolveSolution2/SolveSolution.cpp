@@ -10,11 +10,11 @@
 
 #define MAX_RANDOM_NUM 10000
 
+
 #define BadCode(condition)\
-{\
     if(!(condition))\
     {\
-        printf("ERROR: %s\n", #condition);\
+        printf("ERROR: %s\n %s:%d:%s\n", #condition, __FILE__, __LINE__, __func__);\
         printf("\
                     ████████████████████████████████████████\n\
                     ████████████▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀█████████\n\
@@ -34,8 +34,8 @@
                     ██▄░░░░░░░░░░░░░░░░░░▄▄█████████████████\n\
                     ████▄░░░░░░░░░▄▄▄▄▄█████████████████████\n\
                     ████████████████████████████████████████\n");\
-    }\
-}
+        exit(EXIT_FAILURE);\
+    }
 
 enum NumberOfRoots
 {
@@ -95,7 +95,7 @@ int    RunRandTest      (EquationParam parametrs);
 bool   IsZeroEquation   (const EquationParam random_param);
 
 
-double GenRandDouble    ();                                                 //Random Generaation
+double GenRandDouble    ();                                                    //Random Generaation
 
 
 int main(int argc, char* argv[])
