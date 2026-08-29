@@ -58,6 +58,9 @@ const double EPSILON = 1e-6;
 
 const int QUANT_RANDOM_TESTS = 1000;
 
+int    ChooseMode       (int argc, char* argv[], bool* test_mode, bool* solve_mode);
+
+
 bool   IsCorEnter       (EquationParam* const parametrs);                       //Input
 
 void   EnterOneCoef     (double* const entered_coef, const char used_letter);
@@ -80,9 +83,7 @@ bool   DeleteBuf        ();
 
 
 void   OutputRoots      (EquationParam parametrs);                              //Output
-
-
-int    StartTests       (int argc, char* argv);                                 //Tests
+                                 //Tests
 
 bool   RunAllTests      ();
 
@@ -97,10 +98,22 @@ bool   IsZeroEquation   (const EquationParam random_param);
 
 double GenRandDouble    ();                                                    //Random Generaation
 
+long long GluingASCII   (const char* word);
+
 
 int main(int argc, char* argv[])
 {
-    if(StartTests(argc, argv[1]))
+    bool test_mode = false;
+    bool solve_mode = false;
+
+    ChooseMode(argc, argv, &test_mode, &solve_mode);
+
+    if(test_mode)
+    {
+        RunAllTests();
+    }
+
+    if(solve_mode)
     {
         EquationParam parametrs = {.a = NAN, .b = NAN, .c = NAN, .number_of_roots = INITIAL_ROOTS, .x1 = NAN, .x2 = NAN};
 
@@ -117,18 +130,49 @@ int main(int argc, char* argv[])
 }
 
 
-int StartTests (int argc, char* code_word)
+int ChooseMode (int argc, char* argv[], bool* test_mode, bool* solve_mode)
 {
-    if(argc == 2 && !strcmp(code_word, "test"))
+    for(int i = 0; i < argc; i++)
     {
-        if(RunAllTests())
-            return true;
-        else
-            return false;
+        char first = argv[i][0];
+
+        switch(first)
+        {
+            case 't':
+                if(!strcmp(argv[i], "test"))
+                {
+                    *test_mode = true;
+                    break;
+                }
+
+            case 's':
+                if(!strcmp(argv[i], "solve"))
+                {
+                    *solve_mode = true;
+                    break;
+                }
+
+            default:
+                break;
+
+        }
     }
 
-    return true;
+    return 0;
 }
+
+// long long GluingASCII(const char* word)
+// {
+//     long long result = 0;
+//
+//     for(int i = 0; word[i] != '\0'; i++)
+//     {
+//         int code = (int) word[i];
+//         result += code * 1000;
+//     }
+//
+//     return result;
+// }
 
 
 bool IsCorEnter(EquationParam* const parametrs)
