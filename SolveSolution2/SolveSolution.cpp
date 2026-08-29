@@ -74,7 +74,6 @@ double GenRandDouble    ();                                             //Random
 
 int main(int argc, char* argv[])
 {
-
     if(StartTests(argc, argv[1]))
     {
 
