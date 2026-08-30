@@ -58,7 +58,7 @@ const double EPSILON = 1e-6;
 
 const int QUANT_RANDOM_TESTS = 1000;
 
-int    ChooseMode       (int argc, char* argv[], bool* test_mode, bool* solve_mode);
+int    ChooseMode       (int argc, char* argv[], bool* test_mode_h, bool* solve_mode, bool* random_mode);
 
 
 bool   IsCorEnter       (EquationParam* const parametrs);                       //Input
@@ -83,13 +83,13 @@ bool   DeleteBuf        ();
 
 
 void   OutputRoots      (EquationParam parametrs);                              //Output
-                                 //Tests
 
-bool   RunAllTests      ();
+
+bool   RunAllHand       ();                                                 //Tests
+
+bool   RunAllRandom     ();
 
 int    RunTest          (EquationParam test);
-
-int    RunTestRand      (EquationParam test);
 
 int    RunRandTest      (EquationParam parametrs);
 
@@ -98,30 +98,38 @@ bool   IsZeroEquation   (const EquationParam random_param);
 
 double GenRandDouble    ();                                                    //Random Generaation
 
-long long GluingASCII   (const char* word);
+long   GluingASCII   (const char* word);
 
 
 int main(int argc, char* argv[])
 {
-    bool test_mode = false;
+    bool test_mode_h = false;
+    bool test_mode_r = false;
     bool solve_mode = false;
 
-    ChooseMode(argc, argv, &test_mode, &solve_mode);
 
-    if(test_mode)
+    ChooseMode(argc, argv, &test_mode_h, &test_mode_r, &solve_mode);
+
+
+    if(test_mode_h)
     {
-        RunAllTests();
+        RunAllHand();
+    }
+
+    if(test_mode_r)
+    {
+        RunAllRandom();
     }
 
     if(solve_mode)
     {
         EquationParam parametrs = {.a = NAN, .b = NAN, .c = NAN, .number_of_roots = INITIAL_ROOTS, .x1 = NAN, .x2 = NAN};
 
-        IsCorEnter(&parametrs);
+        IsCorEnter   (&parametrs);
 
         SolveEquation(&parametrs);
 
-        OutputRoots(parametrs);
+        OutputRoots   (parametrs);
     }
 
 
@@ -130,7 +138,7 @@ int main(int argc, char* argv[])
 }
 
 
-int ChooseMode (int argc, char* argv[], bool* test_mode, bool* solve_mode)
+int ChooseMode (int argc, char* argv[], bool* test_mode_h, bool* test_mode_r, bool* solve_mode)
 {
     for(int i = 0; i < argc; i++)
     {
@@ -139,9 +147,16 @@ int ChooseMode (int argc, char* argv[], bool* test_mode, bool* solve_mode)
         switch(first)
         {
             case 't':
-                if(!strcmp(argv[i], "test"))
+                if(!strcmp(argv[i], "test_h"))
                 {
-                    *test_mode = true;
+                    *test_mode_h = true;
+                    break;
+                }
+
+            case 'r':
+                if(!strcmp(argv[i], "test_r"))
+                {
+                    *test_mode_r = true;
                     break;
                 }
 
@@ -161,7 +176,7 @@ int ChooseMode (int argc, char* argv[], bool* test_mode, bool* solve_mode)
     return 0;
 }
 
-// long long GluingASCII(const char* word)
+// long GluingASCII(const char* word)
 // {
 //     long long result = 0;
 //
@@ -350,8 +365,7 @@ void OutputRoots(EquationParam parametrs)
 
 
 
-
-bool RunAllTests()
+bool RunAllHand()
 {
     bool is_success = true;
 
@@ -382,32 +396,34 @@ bool RunAllTests()
 
     printf("Quantity correct hand test %d / %d\n", test_quant, tests_size);
 
+    return is_success;
+}
 
+bool RunAllRandom()
+{
+    bool is_success = true;
     int test_quant_r = 0;
 
     srand((unsigned int) (time(0)));
 
     for(int i = 0; i < QUANT_RANDOM_TESTS; i++)
     {
-        //printf("%lg %lg %lg\n", random_param.a, random_param.b, random_param.c);
         EquationParam random_param = {.a = GenRandDouble(), .b = GenRandDouble(), .c = GenRandDouble(),
                                       .number_of_roots = INITIAL_ROOTS, .x1 = NAN, .x2 = NAN};
 
         if(int random_test_result = RunRandTest(random_param))
         {
-            test_quant += random_test_result;
+            test_quant_r += random_test_result;
         }
 
         else
             is_success = false;
-
-        test_quant_r += RunRandTest(random_param);
     }
-    printf("Quantity correct random test %d /  %d\n", test_quant_r, QUANT_RANDOM_TESTS);
+
+    printf("Quantity correct random test %d / %d\n", test_quant_r, QUANT_RANDOM_TESTS);
 
     return is_success;
 }
-
 
 int RunTest(EquationParam test)
 {
