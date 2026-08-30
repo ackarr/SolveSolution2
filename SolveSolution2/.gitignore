@@ -1,0 +1,11 @@
+# Исходники
+*.out
+a.out
+solver
+flags
+
+# Папки отладки macOS
+*.dSYM/
+
+# Настройки VS Code
+.vscode/
