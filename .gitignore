@@ -4,6 +4,7 @@ solver
 flags
 SolveSolution
 .DS_Store
+*.o
 
 # Папки отладки macOS
 *.dSYM/
