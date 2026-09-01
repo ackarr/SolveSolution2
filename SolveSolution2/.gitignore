@@ -3,6 +3,7 @@
 a.out
 solver
 flags
+*.o
 
 # Папки отладки macOS
 *.dSYM/
