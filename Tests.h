@@ -16,13 +16,6 @@
 
 #define MAX_RANDOM_NUM 10000
 
-enum ModesNum
-{
-    TEST,
-    TEST_HAND,
-    TEST_RAND
-};
-
 
 int    RunSelectTest    (ModesParam* modes_list);
 bool   RunAllHand       ();

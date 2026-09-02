@@ -6,6 +6,13 @@
 #define MAX_MODE_NAME 40
 
 
+enum ModesNum
+{
+    TEST,
+    TEST_HAND,
+    TEST_RAND
+};
+
 enum NumberOfRoots
 {
     INITIAL_ROOTS = -2,

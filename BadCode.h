@@ -8,7 +8,11 @@
 #define BadCode(condition)\
     if(!(condition))\
     {\
-        printf("ERROR: %s\n %s:%d:%s\n", #condition, __FILE__, __LINE__, __func__);\
+        printf("%s:%d\n"\
+               "ERROR: %s in %s\n", \
+               __FILE__, __LINE__, \
+               #condition, __func__);\
+               \
         printf("\
                     ████████████████████████████████████████\n\
                     ████████████▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀█████████\n\
@@ -33,6 +37,6 @@
 
 #endif //NBADCODE
 
-#endif //NBADCODE
+#endif //BADCODE
 
 

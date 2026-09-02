@@ -1,5 +1,6 @@
 #include "SolveSolution.h"
 
+
 int ChooseMode (const int argc, char* argv[], ModesParam* const modes_list)
 {
     for(int j = 0; j < argc; j++)
@@ -55,12 +56,16 @@ int SolveEquation(EquationParam* const parametrs)
     BadCode(!isnan(parametrs->b));
     BadCode(!isnan(parametrs->c));
 
-    if(IsEqualDouble(parametrs->a, 0.0) && IsEqualDouble(parametrs->b, 0.0) && IsEqualDouble(parametrs->c, 0.0))
+    if(IsEqualDouble(parametrs->a, 0.0)
+    && IsEqualDouble(parametrs->b, 0.0)
+    && IsEqualDouble(parametrs->c, 0.0))
     {
         parametrs->number_of_roots = INFINITY_ROOTS;
     }
 
-    else if(IsEqualDouble(parametrs->a, 0.0) && IsEqualDouble(parametrs->b, 0.0) && ! IsEqualDouble((parametrs->c), 0.0))
+    else if(IsEqualDouble(parametrs->a, 0.0)
+         && IsEqualDouble(parametrs->b, 0.0)
+         && !IsEqualDouble((parametrs->c), 0.0))
     {
         parametrs->number_of_roots = ZERO_ROOTS;
     }

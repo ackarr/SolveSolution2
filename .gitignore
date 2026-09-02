@@ -6,8 +6,8 @@ SolveSolution
 .DS_Store
 *.o
 
-# Папки отладки macOS
+# macOS
 *.dSYM/
 
-# Настройки VS Code
+# VS Code
 .vscode/
